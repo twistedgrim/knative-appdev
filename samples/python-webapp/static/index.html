@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Webapp</title>
+    <style>
+      body { font-family: sans-serif; margin: 2rem; background: #f1f5f9; color: #0f172a; }
+      button { padding: 0.5rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: white; }
+      pre { margin-top: 1rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; background: white; }
+    </style>
+  </head>
+  <body>
+    <h1>Python Sample App</h1>
+    <p>Click refresh to fetch changing backend data.</p>
+    <button id="refresh">Refresh API</button>
+    <pre id="result">Loading...</pre>
+    <script>
+      async function load() {
+        const res = await fetch('/api/message');
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+      }
+      document.getElementById('refresh').addEventListener('click', load);
+      load();
+    </script>
+  </body>
+</html>
