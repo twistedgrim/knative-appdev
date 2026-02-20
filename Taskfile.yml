@@ -1,0 +1,62 @@
+version: '3'
+
+tasks:
+  cluster:up:
+    desc: Start local Minikube profile for Knative
+    cmds:
+      - ./scripts/setup-minikube.sh
+
+  knative:install:
+    desc: Install Knative Serving and Kourier
+    cmds:
+      - ./scripts/install-knative-serving.sh
+
+  verify:
+    desc: Deploy and verify sample Knative service
+    cmds:
+      - ./scripts/verify-knative.sh
+
+  expose:localhost:
+    desc: Expose Knative routes to localhost:8081 (keeps running)
+    cmds:
+      - ./scripts/expose-knative-localhost.sh
+
+  expose:localhost:bg:
+    desc: Expose Knative routes to localhost:8081 in background
+    cmds:
+      - ./scripts/expose-knative-localhost-bg.sh
+
+  expose:localhost:stop:
+    desc: Stop background localhost exposure
+    cmds:
+      - ./scripts/expose-knative-localhost-stop.sh
+
+  curl:localhost:
+    desc: Curl hello-knative via localhost route
+    cmds:
+      - ./scripts/curl-knative-localhost.sh
+
+  demo:upload:
+    desc: Upload sample webapp bundle to upload API
+    cmds:
+      - ./scripts/upload-sample-webapp.sh
+
+  flow:demo:
+    desc: End-to-end local demo in mock mode
+    cmds:
+      - ./scripts/demo-flow.sh
+
+  flow:demo:real:
+    desc: End-to-end local demo with real image build and Knative deploy
+    cmds:
+      - ./scripts/demo-flow-real.sh
+
+  flow:demo:stop:
+    desc: Stop end-to-end local demo processes
+    cmds:
+      - ./scripts/demo-flow-stop.sh
+
+  validate:
+    desc: Run local validation checks
+    cmds:
+      - ./tests/validate-local.sh

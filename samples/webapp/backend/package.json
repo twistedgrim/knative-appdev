@@ -1,0 +1,13 @@
+{
+  "name": "sample-webapp-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Simple backend serving API and static frontend for upload testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
