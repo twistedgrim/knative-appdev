@@ -3,7 +3,7 @@ set -euo pipefail
 
 APP_DIR="${APP_DIR:?APP_DIR is required}"
 SERVICE_NAME="${SERVICE_NAME:?SERVICE_NAME is required}"
-NAMESPACE="${NAMESPACE:-default}"
+NAMESPACE="${NAMESPACE:-demo-apps}"
 MINIKUBE_PROFILE="${MINIKUBE_PROFILE:-knative-dev}"
 IMAGE_TAG="${IMAGE_TAG:-${DEPLOYMENT_ID:-$(date +%Y%m%d%H%M%S)}}"
 IMAGE="${IMAGE:-dev.local/${SERVICE_NAME}:${IMAGE_TAG}}"
@@ -21,6 +21,11 @@ fi
 if [[ ! -f "${APP_DIR}/Dockerfile" ]]; then
   echo "[build-deploy-local] Dockerfile not found in APP_DIR=${APP_DIR}"
   exit 1
+fi
+
+if ! kubectl get namespace "${NAMESPACE}" >/dev/null 2>&1; then
+  echo "[build-deploy-local] Creating namespace ${NAMESPACE}"
+  kubectl create namespace "${NAMESPACE}" >/dev/null
 fi
 
 echo "[build-deploy-local] Building image in minikube: ${IMAGE}"

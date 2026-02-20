@@ -7,7 +7,6 @@ This guide defines the local baseline for running the Knative app platform MVP.
 - `kubectl`
 - `minikube`
 - `docker` (or compatible container runtime)
-- `func` CLI for source-to-image deployment path
 - `go` (for the upload API prototype)
 - Internet access to pull Knative release manifests and container images
 
@@ -20,6 +19,16 @@ This guide defines the local baseline for running the Knative app platform MVP.
 
 ## Setup Commands
 Run from repository root.
+
+### 0) One-command demo prep (recommended)
+```bash
+task demo:prep
+```
+Expected output includes:
+- `[demo:prep] Minikube profile knative-dev already running` (or `task cluster:up` when absent)
+- `[demo:prep] Existing Knative detected; waiting for control-plane readiness` (or install path)
+- `[demo:prep] Running verify (attempt .../5)`
+- `[demo-flow] Demo is running`
 
 ### 1) Start Minikube
 ```bash
@@ -53,16 +62,15 @@ Expected output includes:
 - `hello-knative   ...   True`
 - `[verify-knative] Done`
 
-### 4) Build and deploy from source with `func`
+### 4) Build and deploy from source (local image path)
 ```bash
-kubectl apply -f manifests/build/runtime-config-example.yaml
-APP_DIR=src/functions/hello-func ./scripts/func-build-deploy.sh
+APP_DIR=samples/webapp SERVICE_NAME=sample-webapp ./scripts/build-deploy-local.sh
 ```
 Expected output includes:
-- `[func-build-deploy] Building source into image`
-- `[func-build-deploy] Deploying to Knative`
+- `[build-deploy-local] Building image in minikube`
+- `[build-deploy-local] Deploying Knative service sample-webapp`
 - `NAME         URL   LATESTCREATED   LATESTREADY   READY`
-- `[func-build-deploy] Done`
+- `[build-deploy-local] Done`
 
 ### 5) Run upload API prototype
 ```bash
@@ -113,7 +121,7 @@ Expected output includes:
 ### 7) Expose Knative services on localhost
 Set Knative domain to `.localhost` and forward Kourier to a local port:
 ```bash
-./scripts/expose-knative-localhost.sh
+./scripts/expose-knative.sh --mode port8081 --start
 ```
 
 In another terminal, test a service:
@@ -131,6 +139,73 @@ task flow:demo:real
 
 Then confirm real service exists:
 ```bash
-kubectl get ksvc sample-webapp -n default
-curl http://sample-webapp.default.localhost:8081
+kubectl get ksvc sample-webapp -n demo-apps
+curl http://sample-webapp.demo-apps.localhost:8081
+```
+
+### 9) Deploy the Go sample app
+```bash
+task demo:upload:go
+kubectl get ksvc go-webapp -n demo-apps
+```
+
+Open:
+- `http://go-webapp.demo-apps.localhost:8081`
+
+### 10) Deploy application dashboard
+```bash
+task demo:dashboard
+kubectl get ksvc app-dashboard -n platform-system
+```
+
+Open:
+- `http://app-dashboard.platform-system.localhost:8081`
+
+### 11) Cleanup only demo applications
+```bash
+task demo:clean
+kubectl get ksvc -n demo-apps
+```
+
+This removes demo workloads from `demo-apps` while keeping platform workloads in `platform-system`.
+
+### 12) Expose clean localhost URLs on port 80
+```bash
+task expose:localhost:80:bg
+```
+
+This uses `minikube tunnel` and will prompt for sudo on macOS to bind ports `80/443`.
+
+Example URLs (no port suffix):
+- `http://sample-webapp.demo-apps.localhost`
+- `http://go-webapp.demo-apps.localhost`
+- `http://app-dashboard.platform-system.localhost`
+
+Stop:
+```bash
+task expose:localhost:80:stop
+```
+
+Foreground mode (optional, with live tunnel logs):
+```bash
+task expose:localhost:80
+```
+
+### 13) Auto exposure (port 80 with fallback)
+```bash
+task expose:localhost:auto
+```
+
+Behavior:
+- First attempts privileged port-80 exposure via `minikube tunnel`.
+- If not ready within timeout, falls back to localhost `:8081` exposure.
+
+Stop:
+```bash
+task expose:localhost:auto:stop
+```
+
+Background mode:
+```bash
+task expose:localhost:80:bg
 ```

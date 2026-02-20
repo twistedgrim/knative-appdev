@@ -8,29 +8,28 @@ An Application Developer Platform workflow:
 4. Platform returns deployment status and revision.
 
 ## Source-to-Image Choice (Phase 3)
-The MVP uses **Knative Functions (`func`)** for initial source-to-image support.
+The MVP uses a **local Minikube image build path** for source-to-image support.
 
 ### Why this path first
 - Fastest way to prove source -> image -> Knative deploy in local Minikube.
-- Fewer moving parts than a full in-cluster build controller for the first iteration.
-- Direct alignment with Knative Serving primitives and developer workflow.
+- Avoids external registry requirements for local demos.
+- Keeps deploy behavior explicit (`minikube image build` + Knative Service apply).
 
 ## Image Naming and Tagging Convention
 Image format:
 `<registry>/<repo>/<service-name>:<tag>`
 
-Default values in `scripts/func-build-deploy.sh`:
-- `registry`: `ghcr.io/${USER}`
-- `repo`: `knative-appdev`
-- `service-name`: `hello-func` (overridable)
-- `tag`: short git SHA (`git rev-parse --short HEAD`) or timestamp fallback
+Default values in `scripts/build-deploy-local.sh`:
+- image: `dev.local/<service-name>:<deployment-id-or-timestamp>`
+- service-name: from upload request (`service`) or script env var
+- namespace: from upload request (`namespace`) or script env var
 
 Example image:
-`ghcr.io/alice/knative-appdev/hello-func:a1b2c3d`
+`dev.local/sample-webapp:dep-000001`
 
 ## Runtime Configuration Handling
-- Runtime settings are carried via environment variables.
-- Base runtime values can live in a ConfigMap, e.g. `manifests/build/runtime-config-example.yaml`.
+- Runtime settings are carried via environment variables and Knative Service spec.
+- Base runtime values can live in ConfigMaps and be wired into service templates.
 - Sensitive values must be provided through Kubernetes Secrets (never committed as plaintext).
 
 ## Upload Workflow Prototype API (Phase 4)
@@ -66,7 +65,7 @@ Upload bundle:
 curl -X POST http://localhost:8080/deploy \
   -F "bundle=@/path/to/source.tar.gz" \
   -F "service=my-uploaded-app" \
-  -F "namespace=default"
+  -F "namespace=demo-apps"
 ```
 
 Check latest status:
@@ -96,7 +95,7 @@ Optional overrides:
 ```bash
 API_URL=http://localhost:8080 \
 SERVICE_NAME=sample-webapp \
-NAMESPACE=default \
+NAMESPACE=demo-apps \
 ./scripts/upload-sample-webapp.sh
 ```
 
@@ -112,6 +111,13 @@ Cleanup:
 task flow:demo:stop
 ```
 
+## Full Demo Prep
+For a single command that brings up the complete local demo stack:
+```bash
+task demo:prep
+```
+This command is idempotent and is intended for live-demo preparation.
+
 ## Real Build/Deploy Demo
 Use this to create a real Knative service from the uploaded sample bundle:
 ```bash
@@ -120,7 +126,17 @@ task flow:demo:real
 
 Verification:
 ```bash
-kubectl get ksvc sample-webapp -n default
-kubectl get revision -n default -l serving.knative.dev/service=sample-webapp
-curl http://sample-webapp.default.localhost:8081
+kubectl get ksvc sample-webapp -n demo-apps
+kubectl get revision -n demo-apps -l serving.knative.dev/service=sample-webapp
+curl http://sample-webapp.demo-apps.localhost:8081
 ```
+
+## Application Dashboard
+A simple dashboard service is available at `src/app-dashboard`.
+
+Deploy:
+```bash
+task demo:dashboard
+```
+
+It shows Knative services currently built/running by querying Kubernetes API for `services.serving.knative.dev`.

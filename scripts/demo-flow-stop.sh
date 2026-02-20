@@ -22,4 +22,4 @@ fi
 
 echo "[demo-flow-stop] upload API stopped"
 
-./scripts/expose-knative-localhost-stop.sh
+./scripts/expose-knative.sh --mode auto --stop

@@ -8,15 +8,21 @@ Build a Knative-based Application Developer Platform demo with a source-code dep
 - [x] Phase 2 local Knative baseline on Minikube (Serving + Kourier + sample service)
 - [x] Phase 3 source-to-image and deployment path for demo uploads
 - [x] Phase 4 upload workflow demo API with status endpoints and runnable demo flows
+- [x] Demo UX hardening: consolidated exposure script, namespace cleanup model, dashboard revisions, one-command prep target
 
 ## Delivered Demo Capabilities
 - Local Minikube + Knative setup scripts and verification scripts.
-- Localhost routing for Knative services (`*.localhost` via Kourier port-forward helpers).
+- Localhost routing for Knative services with both `:8081` and clean port-80 options (`minikube tunnel`, auto-fallback mode).
 - Upload API accepting bundle uploads (`zip`/`tar`) with async status reporting.
 - Sample frontend/backend webapp bundle for upload testing.
+- Namespace split: demo workloads in `demo-apps`, platform workloads in `platform-system`.
+- App dashboard service with revision visibility (latest created and latest ready revisions).
+- Demo cleanup command that clears only demo workloads (`task demo:clean`).
+- Unified localhost exposure script with mode/action flags (`scripts/expose-knative.sh`) and task wrappers.
 - One-command demo flows:
   - `task flow:demo` (mock deploy path)
   - `task flow:demo:real` (real image build + real Knative service deployment)
+  - `task demo:prep` (idempotent cluster/demo bring-up for presentation)
 
 ## Phase 1: Local MVP Foundation
 - Install and validate Knative Serving on Minikube.
@@ -39,9 +45,10 @@ Build a Knative-based Application Developer Platform demo with a source-code dep
 - Expose services on localhost for browser-based demo validation.
 
 ## Immediate Next Steps
-1. Improve upload/build status granularity (streaming or step-level progress).
-2. Add stronger bundle validation rules and clearer failure messages.
-3. Add `Taskfile` targets for smoke checks of deployed uploaded apps.
+1. Stabilize `cluster:up` + Knative startup race handling to reduce transient webhook restart windows during rapid re-runs.
+2. Add deployment history persistence (retain more than latest upload state, include timestamps and revision chain).
+3. Add richer dashboard filters/sorting (namespace, readiness, service name) and quick links to logs/status endpoints.
+4. Add smoke test automation that validates clean-namespace flow: `demo:clean -> flow:demo:real -> demo:upload:go -> demo:dashboard`.
 
 ## Out of Scope (Current)
 - Production-readiness hardening (full observability stack, CI/release pipelines, backup/recovery runbooks).

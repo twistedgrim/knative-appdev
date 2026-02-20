@@ -503,9 +503,6 @@ func detectScriptPath() string {
 		"scripts/build-deploy-local.sh",
 		"../scripts/build-deploy-local.sh",
 		"../../scripts/build-deploy-local.sh",
-		"scripts/func-build-deploy.sh",
-		"../scripts/func-build-deploy.sh",
-		"../../scripts/func-build-deploy.sh",
 	}
 	for _, candidate := range candidates {
 		if st, err := os.Stat(candidate); err == nil && !st.IsDir() {

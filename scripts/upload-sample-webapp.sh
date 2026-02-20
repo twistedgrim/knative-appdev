@@ -3,7 +3,7 @@ set -euo pipefail
 
 API_URL="${API_URL:-http://localhost:8080}"
 SERVICE_NAME="${SERVICE_NAME:-sample-webapp}"
-NAMESPACE="${NAMESPACE:-default}"
+NAMESPACE="${NAMESPACE:-demo-apps}"
 SAMPLE_DIR="${SAMPLE_DIR:-samples/webapp}"
 POLL_SECONDS="${POLL_SECONDS:-2}"
 MAX_POLLS="${MAX_POLLS:-180}"

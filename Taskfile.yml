@@ -19,17 +19,42 @@ tasks:
   expose:localhost:
     desc: Expose Knative routes to localhost:8081 (keeps running)
     cmds:
-      - ./scripts/expose-knative-localhost.sh
+      - ./scripts/expose-knative.sh --mode port8081 --start
 
   expose:localhost:bg:
     desc: Expose Knative routes to localhost:8081 in background
     cmds:
-      - ./scripts/expose-knative-localhost-bg.sh
+      - ./scripts/expose-knative.sh --mode port8081 --start --background
 
   expose:localhost:stop:
     desc: Stop background localhost exposure
     cmds:
-      - ./scripts/expose-knative-localhost-stop.sh
+      - ./scripts/expose-knative.sh --mode port8081 --stop
+
+  expose:localhost:80:
+    desc: Expose Knative URLs on port 80 via minikube tunnel (requires sudo prompt)
+    cmds:
+      - ./scripts/expose-knative.sh --mode port80 --start
+
+  expose:localhost:80:bg:
+    desc: Expose Knative URLs on port 80 in background (requires sudo prompt)
+    cmds:
+      - ./scripts/expose-knative.sh --mode port80 --start --background
+
+  expose:localhost:80:stop:
+    desc: Stop port-80 minikube tunnel exposure
+    cmds:
+      - ./scripts/expose-knative.sh --mode port80 --stop
+
+  expose:localhost:auto:
+    desc: Try privileged port-80 exposure first, then fallback to :8081
+    cmds:
+      - ./scripts/expose-knative.sh --mode auto --start --background
+
+  expose:localhost:auto:stop:
+    desc: Stop auto exposure mode (both port-80 and :8081 handlers)
+    cmds:
+      - ./scripts/expose-knative.sh --mode auto --stop
 
   curl:localhost:
     desc: Curl hello-knative via localhost route
@@ -40,6 +65,63 @@ tasks:
     desc: Upload sample webapp bundle to upload API
     cmds:
       - ./scripts/upload-sample-webapp.sh
+
+  demo:upload:go:
+    desc: Upload Go sample app bundle to upload API
+    cmds:
+      - SAMPLE_DIR=samples/go-webapp SERVICE_NAME=go-webapp ./scripts/upload-sample-webapp.sh
+
+  demo:dashboard:
+    desc: Build and deploy the Knative application dashboard service
+    cmds:
+      - ./scripts/deploy-app-dashboard.sh
+
+  demo:prep:
+    desc: Prepare full local demo stack (cluster, Knative, upload flow, dashboard)
+    cmds:
+      - |
+        bash -lc '
+          if minikube status -p knative-dev >/dev/null 2>&1 && minikube status -p knative-dev | rg -q "host: Running"; then
+            echo "[demo:prep] Minikube profile knative-dev already running"
+          else
+            task cluster:up
+          fi
+        '
+      - |
+        bash -lc '
+          if kubectl get deployment webhook -n knative-serving >/dev/null 2>&1 \
+            && kubectl get deployment controller -n knative-serving >/dev/null 2>&1; then
+            echo "[demo:prep] Existing Knative detected; waiting for control-plane readiness"
+            kubectl rollout status deployment/activator -n knative-serving --timeout=180s
+            kubectl rollout status deployment/autoscaler -n knative-serving --timeout=180s
+            kubectl rollout status deployment/controller -n knative-serving --timeout=180s
+            kubectl rollout status deployment/webhook -n knative-serving --timeout=180s
+            kubectl rollout status deployment/net-kourier-controller -n knative-serving --timeout=180s
+            kubectl rollout status deployment/3scale-kourier-gateway -n kourier-system --timeout=180s
+          else
+            echo "[demo:prep] Knative not found; installing"
+            task knative:install
+          fi
+        '
+      - |
+        bash -lc '
+          for attempt in 1 2 3 4 5; do
+            echo "[demo:prep] Running verify (attempt ${attempt}/5)"
+            if task verify; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "[demo:prep] verify failed after 5 attempts"
+          exit 1
+        '
+      - task flow:demo:real
+      - task demo:dashboard
+
+  demo:clean:
+    desc: Remove all demo Knative services from demo namespace (keeps platform namespace)
+    cmds:
+      - ./scripts/cleanup-demo-apps.sh
 
   flow:demo:
     desc: End-to-end local demo in mock mode
