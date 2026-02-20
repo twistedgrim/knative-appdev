@@ -8,7 +8,7 @@ An Application Developer Platform workflow:
 4. Platform returns deployment status and revision.
 
 ## Source-to-Image Choice (Phase 3)
-The MVP uses a **local Minikube image build path** for source-to-image support.
+The POC uses a **local Minikube image build path** for source-to-image support.
 
 ### Why this path first
 - Fastest way to prove source -> image -> Knative deploy in local Minikube.

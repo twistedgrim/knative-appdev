@@ -1,7 +1,7 @@
-# Local Development (Minikube MVP)
+# Local Development (Minikube POC)
 
 ## Purpose
-This guide defines the local baseline for running the Knative app platform MVP.
+This guide defines the local baseline for running the Knative app platform POC for demo/testing.
 
 ## Prerequisites
 - `kubectl`

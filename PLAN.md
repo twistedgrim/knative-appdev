@@ -1,7 +1,12 @@
 # Plan
 
 ## Goal
-Build a Knative-based Application Developer Platform demo with a source-code deployment workflow.
+Build a Knative-based Application Developer Platform POC with a source-code deployment workflow for local demo/testing.
+
+## Scope Guardrails
+- This plan is for a temporary local POC on Minikube.
+- Prioritize demo/test workflows and fast local iteration.
+- Do not treat this plan as a production readiness roadmap.
 
 ## Current Status
 - [x] Phase 1 scaffold and core docs (`docs/`, `manifests/`, `scripts/`, `src/`, `tests/`)
@@ -25,7 +30,7 @@ Build a Knative-based Application Developer Platform demo with a source-code dep
   - `task demo:prep` (idempotent platform bring-up without demo apps)
   - `task demo:seed:apps` (explicit baseline app deployment after prep)
 
-## Phase 1: Local MVP Foundation
+## Phase 1: Local POC Foundation
 - Install and validate Knative Serving on Minikube.
 - Deploy sample Knative service and verify readiness/routing.
 - Document local setup and expected outputs.

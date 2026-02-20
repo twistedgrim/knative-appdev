@@ -3,8 +3,14 @@
 A Knative-based Application Developer Platform prototype that provides a developer workflow:
 `upload code -> build image -> deploy service`.
 
+## Scope (Demo/POC)
+- This repository is a temporary POC for local testing and demo use.
+- The primary runtime target is local Minikube (`knative-dev` profile).
+- It is intentionally optimized for iteration speed and demo reliability, not production hardening.
+- Production concerns (HA, security hardening, full CI/CD, SLOs, multi-cluster operations) are out of scope for this repo.
+
 ## Goals
-- Deliver a local Minikube MVP first.
+- Deliver a local Minikube POC first.
 - Provide repeatable setup scripts and manifests for Knative Serving.
 - Implement source-to-image and upload-driven deployment flow incrementally.
 - Keep docs aligned with implementation checkpoints.

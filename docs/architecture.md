@@ -6,8 +6,8 @@ Build a Knative-based Application Developer Platform that provides a workflow fo
 2. Build a container image.
 3. Deploy to Knative Serving.
 
-## MVP Scope (Local)
-The first target is a local Minikube environment with Knative Serving and a minimal source-upload API.
+## POC Scope (Local)
+The first target is a local Minikube environment with Knative Serving and a minimal source-upload API for demo/testing.
 
 ### Core Components
 - **Minikube cluster**: local Kubernetes runtime.
@@ -28,6 +28,7 @@ The first target is a local Minikube environment with Knative Serving and a mini
 - Keep local-first workflow explicit and reproducible.
 - Keep manifests and docs aligned to each incremental capability.
 - Avoid plaintext secrets; use Kubernetes secret patterns.
+- Keep scope focused on POC/demos, not production hardening.
 
 ## Future Expansion
 - Multi-template app catalog.
