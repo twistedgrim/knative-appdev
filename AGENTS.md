@@ -11,7 +11,7 @@ Guidelines for AI agents working in this repository.
 1. Create a feature branch before making code changes.
 2. Make focused commits with conventional commit messages.
 3. Open a PR for review; do not merge directly to `master`/`main`.
-4. Prefer `task demo:prep` for repeatable local demo bring-up before presenting.
+4. Prefer staged demo setup: `task demo:prep` (platform only) then `task demo:seed:apps` (deploy baseline demo apps).
 
 ## Implementation Rules
 - Follow existing structure and naming conventions.
@@ -23,7 +23,7 @@ Guidelines for AI agents working in this repository.
 - Validate YAML/manifests before committing.
 - Test changes locally (Minikube) where applicable.
 - Prefer running `./tests/validate-local.sh` and task-based demo checks (`task flow:demo`, `task flow:demo:real`) for verification.
-- For demo readiness, run `task demo:prep` and confirm `kubectl get ksvc -A` shows demo and platform services as `READY=True`.
+- For demo readiness, run `task demo:prep` and confirm platform services are ready, then run `task demo:seed:apps` to deploy baseline demo apps.
 - For localhost routing changes, verify both `task expose:localhost:auto` and explicit mode checks via `scripts/expose-knative.sh --mode ... --status`.
 - Include verification commands and outcomes in PR notes.
 
