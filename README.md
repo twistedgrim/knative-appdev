@@ -45,10 +45,12 @@ See `PLAN.md` for the current demo roadmap and next implementation steps.
 
 ## Sample Upload Demo
 ```bash
+./scripts/upload-app.sh --app-dir samples/webapp --service sample-webapp --namespace demo-apps
 ./scripts/upload-sample-webapp.sh
 ```
 
 Sample app source lives in `samples/webapp`.
+Sample requirements/contract live in `samples/README.md`.
 
 ## Localhost Access (Knative)
 ```bash
@@ -125,7 +127,7 @@ Uploaded app URL after localhost exposure:
 - `http://sample-webapp.demo-apps.localhost:8081`
 
 ## Demo Prep (One Command)
-Prepare the full local demo stack in one command:
+Prepare platform services in one command (without deploying demo apps):
 ```bash
 task demo:prep
 ```
@@ -133,9 +135,16 @@ task demo:prep
 This ensures:
 - Minikube profile `knative-dev` is running.
 - Knative control plane is installed/ready (installs if missing).
-- Sample Knative verification service is healthy (with retry handling during startup races).
-- `task flow:demo:real`
 - `task demo:dashboard`
+
+Then seed baseline demo apps explicitly:
+```bash
+task demo:seed:apps
+```
+
+This deploys:
+- `hello-knative` (via `task verify`)
+- `sample-webapp` (via `task flow:demo:real`)
 
 ## Second Sample App
 Go sample app location:
@@ -158,6 +167,22 @@ kubectl get ksvc go-webapp -n demo-apps
 
 URL:
 - `http://go-webapp.demo-apps.localhost:8081`
+
+## Additional Sample Apps
+TypeScript (React + Tailwind + shadcn-style + Node.js backend):
+```bash
+task demo:upload:ts
+```
+
+Rust sample:
+```bash
+task demo:upload:rust
+```
+
+Python sample:
+```bash
+task demo:upload:python
+```
 
 ## App Dashboard (Knative)
 Deploy a simple web page that lists Knative apps running in the cluster:

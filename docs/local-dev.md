@@ -20,14 +20,21 @@ This guide defines the local baseline for running the Knative app platform MVP.
 ## Setup Commands
 Run from repository root.
 
-### 0) One-command demo prep (recommended)
+### 0) One-command platform prep (recommended)
 ```bash
 task demo:prep
 ```
 Expected output includes:
 - `[demo:prep] Minikube profile knative-dev already running` (or `task cluster:up` when absent)
 - `[demo:prep] Existing Knative detected; waiting for control-plane readiness` (or install path)
-- `[demo:prep] Running verify (attempt .../5)`
+- `app-dashboard   ...   True`
+
+### 0b) Seed baseline demo apps
+```bash
+task demo:seed:apps
+```
+Expected output includes:
+- `[demo:seed:apps] Running verify (attempt .../5)`
 - `[demo-flow] Demo is running`
 
 ### 1) Start Minikube
@@ -151,6 +158,14 @@ kubectl get ksvc go-webapp -n demo-apps
 
 Open:
 - `http://go-webapp.demo-apps.localhost:8081`
+
+### 9b) Deploy additional language samples
+```bash
+task demo:upload:ts
+task demo:upload:rust
+task demo:upload:python
+kubectl get ksvc -n demo-apps
+```
 
 ### 10) Deploy application dashboard
 ```bash

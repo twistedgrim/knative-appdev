@@ -22,7 +22,8 @@ Build a Knative-based Application Developer Platform demo with a source-code dep
 - One-command demo flows:
   - `task flow:demo` (mock deploy path)
   - `task flow:demo:real` (real image build + real Knative service deployment)
-  - `task demo:prep` (idempotent cluster/demo bring-up for presentation)
+  - `task demo:prep` (idempotent platform bring-up without demo apps)
+  - `task demo:seed:apps` (explicit baseline app deployment after prep)
 
 ## Phase 1: Local MVP Foundation
 - Install and validate Knative Serving on Minikube.

@@ -11,6 +11,7 @@ tasks:
     cmds:
       - ./scripts/install-knative-serving.sh
 
+
   verify:
     desc: Deploy and verify sample Knative service
     cmds:
@@ -71,13 +72,28 @@ tasks:
     cmds:
       - SAMPLE_DIR=samples/go-webapp SERVICE_NAME=go-webapp ./scripts/upload-sample-webapp.sh
 
+  demo:upload:ts:
+    desc: Upload TypeScript sample app bundle to upload API
+    cmds:
+      - SAMPLE_DIR=samples/ts-webapp SERVICE_NAME=ts-webapp ./scripts/upload-sample-webapp.sh
+
+  demo:upload:rust:
+    desc: Upload Rust sample app bundle to upload API
+    cmds:
+      - SAMPLE_DIR=samples/rust-webapp SERVICE_NAME=rust-webapp ./scripts/upload-sample-webapp.sh
+
+  demo:upload:python:
+    desc: Upload Python sample app bundle to upload API
+    cmds:
+      - SAMPLE_DIR=samples/python-webapp SERVICE_NAME=python-webapp ./scripts/upload-sample-webapp.sh
+
   demo:dashboard:
     desc: Build and deploy the Knative application dashboard service
     cmds:
       - ./scripts/deploy-app-dashboard.sh
 
   demo:prep:
-    desc: Prepare full local demo stack (cluster, Knative, upload flow, dashboard)
+    desc: Prepare platform stack only (cluster, Knative, dashboard). Does not deploy demo apps.
     cmds:
       - |
         bash -lc '
@@ -103,20 +119,24 @@ tasks:
             task knative:install
           fi
         '
+      - task demo:dashboard
+
+  demo:seed:apps:
+    desc: Deploy baseline demo apps (hello-knative + sample-webapp) after platform prep
+    cmds:
       - |
         bash -lc '
           for attempt in 1 2 3 4 5; do
-            echo "[demo:prep] Running verify (attempt ${attempt}/5)"
+            echo "[demo:seed:apps] Running verify (attempt ${attempt}/5)"
             if task verify; then
               exit 0
             fi
             sleep 15
           done
-          echo "[demo:prep] verify failed after 5 attempts"
+          echo "[demo:seed:apps] verify failed after 5 attempts"
           exit 1
         '
       - task flow:demo:real
-      - task demo:dashboard
 
   demo:clean:
     desc: Remove all demo Knative services from demo namespace (keeps platform namespace)

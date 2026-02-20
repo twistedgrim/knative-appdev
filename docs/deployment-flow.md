@@ -85,9 +85,11 @@ Run local smoke test:
 
 ## Sample App Upload
 A simple upload target is available at `samples/webapp`.
+Sample requirements for adding new apps are documented in `samples/README.md`.
 
 Wrapper script:
 ```bash
+./scripts/upload-app.sh --app-dir samples/webapp --service sample-webapp --namespace demo-apps
 ./scripts/upload-sample-webapp.sh
 ```
 
@@ -98,6 +100,15 @@ SERVICE_NAME=sample-webapp \
 NAMESPACE=demo-apps \
 ./scripts/upload-sample-webapp.sh
 ```
+
+Client responsibility:
+- bundle source and call Upload API
+- poll deployment status endpoints
+
+Backend responsibility:
+- validate bundle contents and constraints
+- build container image and update Knative Service
+- access Kubernetes/Knative APIs and return status/revision/log hints
 
 If the upload API runs in mock mode (`MOCK_DEPLOY=true`), this flow still validates bundle upload, extraction, and status transitions.
 
@@ -112,11 +123,16 @@ task flow:demo:stop
 ```
 
 ## Full Demo Prep
-For a single command that brings up the complete local demo stack:
+For a single command that brings up the platform stack (without deploying demo apps):
 ```bash
 task demo:prep
 ```
 This command is idempotent and is intended for live-demo preparation.
+
+To deploy baseline demo applications after prep:
+```bash
+task demo:seed:apps
+```
 
 ## Real Build/Deploy Demo
 Use this to create a real Knative service from the uploaded sample bundle:

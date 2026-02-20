@@ -1,0 +1,38 @@
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Logs / temp
+*.log
+tmp/
+.tmp/
+
+# Node / frontend builds
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Go
+bin/
+*.test
+*.out
+
+# Rust
+target/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Env files
+.env
+.env.*

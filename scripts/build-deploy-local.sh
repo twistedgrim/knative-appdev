@@ -31,6 +31,23 @@ fi
 echo "[build-deploy-local] Building image in minikube: ${IMAGE}"
 minikube image build -p "${MINIKUBE_PROFILE}" -t "${IMAGE}" "${APP_DIR}"
 
+if minikube image ls -p "${MINIKUBE_PROFILE}" | grep -Fx "${IMAGE}" >/dev/null 2>&1; then
+  echo "[build-deploy-local] Image available in minikube cache: ${IMAGE}"
+else
+  echo "[build-deploy-local] Image not found after minikube build; falling back to docker build + minikube image load"
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "[build-deploy-local] docker is required for fallback image load path"
+    exit 1
+  fi
+  docker build -t "${IMAGE}" "${APP_DIR}"
+  minikube image load -p "${MINIKUBE_PROFILE}" "${IMAGE}"
+
+  if ! minikube image ls -p "${MINIKUBE_PROFILE}" | grep -Fx "${IMAGE}" >/dev/null 2>&1; then
+    echo "[build-deploy-local] image still not present in minikube after fallback load: ${IMAGE}"
+    exit 1
+  fi
+fi
+
 CURRENT_SKIP="$(kubectl get configmap config-deployment -n knative-serving -o jsonpath='{.data.registriesSkippingTagResolving}' 2>/dev/null || true)"
 if [[ "${CURRENT_SKIP}" == *"dev.local"* ]]; then
   echo "[build-deploy-local] Knative already configured to skip tag resolution for dev.local"
