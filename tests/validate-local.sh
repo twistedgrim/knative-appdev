@@ -9,15 +9,14 @@ bash -n \
   scripts/setup-minikube.sh \
   scripts/install-knative-serving.sh \
   scripts/verify-knative.sh \
-  scripts/func-build-deploy.sh \
   scripts/build-deploy-local.sh \
-  scripts/expose-knative-localhost.sh \
-  scripts/expose-knative-localhost-bg.sh \
-  scripts/expose-knative-localhost-stop.sh \
+  scripts/expose-knative.sh \
   scripts/upload-sample-webapp.sh \
   scripts/demo-flow.sh \
   scripts/demo-flow-real.sh \
   scripts/demo-flow-stop.sh \
+  scripts/deploy-app-dashboard.sh \
+  scripts/cleanup-demo-apps.sh \
   tests/test-upload-workflow.sh
 
 echo "[validate] manifest dry-run"

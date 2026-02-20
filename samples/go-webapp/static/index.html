@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go Sample App</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; background: #f5f7fb; }
+      .card { background: #fff; border: 1px solid #dbe3ef; border-radius: 10px; padding: 1rem 1.25rem; max-width: 720px; }
+      pre { background: #111827; color: #e5e7eb; padding: 0.75rem; border-radius: 8px; overflow-x: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Go Sample App</h1>
+      <p>Backend response from <code>/api/info</code>:</p>
+      <pre id="output">Loading...</pre>
+    </div>
+    <script>
+      fetch('/api/info')
+        .then((r) => r.json())
+        .then((data) => {
+          document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((err) => {
+          document.getElementById('output').textContent = String(err);
+        });
+    </script>
+  </body>
+</html>

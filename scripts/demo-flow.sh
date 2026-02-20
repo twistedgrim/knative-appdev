@@ -9,6 +9,7 @@ UPLOAD_API_PID_FILE="${UPLOAD_API_PID_FILE:-/tmp/knative-upload-api.pid}"
 UPLOAD_API_URL="${UPLOAD_API_URL:-http://localhost:8080}"
 MOCK_DEPLOY="${MOCK_DEPLOY:-true}"
 BUILD_DEPLOY_SCRIPT="${BUILD_DEPLOY_SCRIPT:-}"
+DEMO_NAMESPACE="${DEMO_NAMESPACE:-demo-apps}"
 
 if ! command -v go >/dev/null 2>&1; then
   echo "[demo-flow] go is required. Install with: brew install go"
@@ -25,7 +26,7 @@ if [[ -f "${UPLOAD_API_PID_FILE}" ]]; then
 fi
 
 echo "[demo-flow] Starting localhost exposure"
-./scripts/expose-knative-localhost-bg.sh
+./scripts/expose-knative.sh --mode port8081 --start --background
 
 echo "[demo-flow] Starting upload API"
 if [[ ! -f "${UPLOAD_API_PID_FILE}" ]]; then
@@ -57,11 +58,11 @@ if ! curl -fsS "${UPLOAD_API_URL}/healthz" >/dev/null 2>&1; then
 fi
 
 echo "[demo-flow] Uploading sample webapp"
-./scripts/upload-sample-webapp.sh
+NAMESPACE="${DEMO_NAMESPACE}" ./scripts/upload-sample-webapp.sh
 
 echo "[demo-flow] Demo is running"
-echo "[demo-flow] Browser URL (baseline): http://hello-knative.default.localhost:8081"
-echo "[demo-flow] Browser URL (uploaded app): http://sample-webapp.default.localhost:8081"
+echo "[demo-flow] Browser URL (baseline): http://hello-knative.${DEMO_NAMESPACE}.localhost:8081"
+echo "[demo-flow] Browser URL (uploaded app): http://sample-webapp.${DEMO_NAMESPACE}.localhost:8081"
 echo "[demo-flow] API status: ${UPLOAD_API_URL}/status/latest"
 echo "[demo-flow] Upload API log: ${UPLOAD_API_LOG}"
 echo "[demo-flow] Stop with: task flow:demo:stop"
