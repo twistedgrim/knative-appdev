@@ -4,7 +4,7 @@ Guidelines for AI agents working in this repository.
 
 ## Scope
 - Keep this repo focused on a Knative-based application/developer platform.
-- Current target is a local/demo platform (Minikube-first), not production hardening.
+- Current target is a local demo/POC platform (Minikube-first), not production hardening.
 - Prefer small, reversible changes with clear validation steps.
 
 ## Workflow
